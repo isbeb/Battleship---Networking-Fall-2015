@@ -1,2 +1,4 @@
-# Battleship---Networking-Fall-2015
-Don't let Yampolskiy down.
+# Battleship
+**Mission Statement:** Don't let Yampolskiy down.
+
+This repository is a classic implementation of the game, [Battleship](https://en.wikipedia.org/wiki/Battleship_(game), using sockets.
