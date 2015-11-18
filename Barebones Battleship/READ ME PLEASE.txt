@@ -1,0 +1,5 @@
+the server should be run first in a project
+
+the client needs to opened in two projects to simulate 2 people
+
+there must be an easier way
