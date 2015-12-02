@@ -149,16 +149,20 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="board.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="ship.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Battleship.Client.cpp" />
+    <ClCompile Include="board.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Battleship.Client.cpp" />
+    <ClCompile Include="ship.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="tile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

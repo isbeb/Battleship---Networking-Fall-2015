@@ -21,6 +21,11 @@ using namespace std;
 #define CONFIMATION 6
 #define DENIED 7
 
+struct Move {
+	int x;
+	int y;
+};
+
 class Client {
 private:
 	string serverAddress;
@@ -33,12 +38,9 @@ private:
 	string receiveMessage();
 
 public:
-	Client(string ip = "127.0.0.1", string port = "8000") {
-		serverAddress = ip;
-		serverPort = port;
-	}
+	Client(string ip = "127.0.0.1", string port = "8000");
 
-	~Client() {
+	void cleanup() {
 		// We're done, so close the socket connection and cleanup.
 		closesocket(connectSocket);
 		WSACleanup();
@@ -47,8 +49,14 @@ public:
 	// Attempt to resolve the server IP address and port.
 	// For now, we're going to connect to 127.0.0.1 (localhost)
 	// For now, our server will open at port 8000.
-	void connectToNetwork();
-	void playGame();
+	bool getSetupSignal();
+	void confirmSetup();
+	void sendMove(int x, int y);
+	void exitGracefully();
+	int getUpdate();
+	Move getMove();
+	void sendUpdate(string result);
+	int getTurn();
 };
 
 #endif

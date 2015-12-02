@@ -1,9 +1,9 @@
 #include "Client.h"
-#include "Game.h"
 
 
-void Client::connectToNetwork()
-{
+Client::Client(string ip, string port) {
+	serverAddress = ip;
+	serverPort = port;
 	addrinfo *result = nullptr, *ptr = nullptr, hints;
 	WSADATA wsaData;
 
@@ -11,6 +11,7 @@ void Client::connectToNetwork()
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
 		cout << "Unable to initialize WinSock2: " << iResult;
+		system("exit");
 	}
 
 	ZeroMemory(&hints, sizeof(hints));	// Clear the memory block in hints
@@ -22,6 +23,8 @@ void Client::connectToNetwork()
 	if (error != 0) {
 		cout << "There was an error resolving the address: " << WSAGetLastError() << endl;
 		WSACleanup();
+		cin.get();
+		system("exit");
 	}
 
 
@@ -33,12 +36,18 @@ void Client::connectToNetwork()
 		cout << "Unable to create a socket connection: " << WSAGetLastError();
 		freeaddrinfo(result);		// Clean up the address info we stored
 		WSACleanup();				// Clean up the library we've opened
+		cin.get();
+		system("exit");
 	}
 
 	// Let's connect with the socket
-	iResult = SOCKET_ERROR;
-	while (iResult == SOCKET_ERROR) {
-		iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+	iResult = connect(connectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+	if (iResult == SOCKET_ERROR)
+	{
+		cout << "There was an error connecting to the socket: " << WSAGetLastError() << endl;
+		WSACleanup();
+		cin.get();
+		system("exit");
 	}
 
 	// TODO: Use the next address specified by getaddrinfo if the first one fails?
@@ -72,106 +81,98 @@ string Client::receiveMessage()
 	return string(recvbuf);
 }
 
-void Client::playGame() {
-	string newMessage = "";
-	int turns = 0;
-	srand(time(NULL));
-	// Wait until the server sends us a response
-	while (gameInPlay) {
-		switch (playerState) {
-		case 0:
-			newMessage = receiveMessage();
+bool Client::getSetupSignal()
+{
+	string newMessage = receiveMessage();
 
-			if (newMessage == "SETUP") {
-				playerState = 1;
-				cout << "Connect! Time to setup the board!" << endl;
-				setup();
-				sendMessage("CONFIRM");
-			}
+	if (newMessage == "SETUP")
+	{
+		return true;
+	}
+	else if (newMessage == "QUIT")
+	{
+		return false;
+	}
+}
 
-			break;
+void Client::confirmSetup()
+{
+	sendMessage("CONFIRM");
+}
 
-		case 1:
-			newMessage = receiveMessage();
+void Client::sendMove(int x, int y)
+{
+	stringstream input;
 
-			if (newMessage == "TURN")
-			{
-				cout << "Your turn player!" << endl;
+	input << x << ',' << y;
 
-				system("cls");
-				DrawBoard(2, gameInPlay);
+	sendMessage(input.str());
+}
 
-				//Get attack coords from this player
-				bool goodInput = false;
-				int x, y;
-				while (goodInput == false)
-				{
-					goodInput = UserInputAttack(x, y, 1);
-				}
+void Client::exitGracefully()
+{
+	cout << "Opponent quit unexpectedly" << endl;
+	cin.get();
+	cleanup();
+	system("exit");
+}
 
-				stringstream input;
+int Client::getUpdate()
+{
+	string newMessage = receiveMessage();
+	
+	if (newMessage == "HIT")
+	{
+		return 1;
+	}
+	else if (newMessage == "MISS")
+	{
+		return 0;
+	}
+	else if (newMessage == "WIN")
+	{
+		return -1;
+	}
+	else if (newMessage == "QUIT")
+	{
+		return -2;
+	}
+}
 
-				input << x << ',' << y;
+Move Client::getMove()
+{
+	string newMessage = receiveMessage();
+	
+	string x = newMessage.substr(0, newMessage.find(','));
+	string y = newMessage.substr(newMessage.find(',') + 1, newMessage.length());
 
-				sendMessage(input.str());
+	Move opponentMove;
 
-				newMessage = receiveMessage();
+	opponentMove.x = atoi(x.c_str());
+	opponentMove.y = atoi(y.c_str());
 
-				cout << "I made a move" << endl;
+	return opponentMove;
+}
 
-				if (newMessage == "HIT")
-				{
-					player[2].grid[x][y] = isHit;
-				}
-				else if (newMessage == "MISS")
-				{
-					player[2].grid[x][y] = isMiss;
-				}
-				else if (newMessage == "WIN")
-				{
-					cout << "Yay, I won!" << endl;
-					gameInPlay = false;
-				}
-			}
-			else if (newMessage == "NOTURN")
-			{
-				// Wait for update
-				cout << "Other player's turn" << endl;
-				newMessage = receiveMessage();
+void Client::sendUpdate(string result)
+{
+	sendMessage(result);
+}
 
-				string x = newMessage.substr(0, newMessage.find(','));
-				string y = newMessage.substr(newMessage.find(',') + 1, newMessage.length());
+int Client::getTurn()
+{
+	string newMessage = receiveMessage();
 
-				int ix = atoi(x.c_str());
-				int iy = atoi(y.c_str());
-
-				// Do something with the move here
-
-				cout << "Opponent's move was " << ix << ", " << iy << endl;
-
-				if (player[1].grid[ix][iy] == isShip)
-				{
-					if (GameOverCheck(1))
-					{
-						sendMessage("WIN");
-						cout << "I lost :(" << endl;
-					}
-					else
-					{
-						sendMessage("HIT");
-					}
-				}
-				else if (player[1].grid[ix][iy] == isWater)
-				{
-					sendMessage("MISS");
-				}
-
-				turns++;
-
-			}
-			break;
-		case 2:
-			break;
-		}
+	if (newMessage == "TURN")
+	{
+		return 1;
+	}
+	else if (newMessage == "NOTURN")
+	{
+		return 0;
+	}
+	else if (newMessage == "QUIT")
+	{
+		return -1;
 	}
 }
