@@ -24,37 +24,37 @@ using namespace std;
 bool UserInputShip(int ship_number, int& x, int& y, int& d, Board gameboard)
 {
 	// causes infinate loop on char inputs
-    bool goodInput = false;
+	bool goodInput = false;
 	cin >> d >> x >> y;
 
-	if(cin.fail())
+	if (cin.fail())
 	{
 		cin.clear();
-		cin.ignore(); 
+		cin.ignore();
 		cout << "\nPlease enter an Integer only." << endl;
 	}
 
-	for (int i=0; i<gameboard.get_ship_size(ship_number); i++)
+	for (int i = 0; i<gameboard.get_ship_size(ship_number); i++)
 	{
-		if(d == 0)
+		if (d == 0)
 		{
-			if(gameboard.get_ship(x+i,y)) return goodInput;
-			if (x<0 || x>=10-gameboard.get_ship_size(ship_number)-i) return goodInput;
-			if (y<0 || y>=10) return goodInput;
+			if (gameboard.get_ship(x + i, y)) return goodInput;
+			if (x<0 || x>10 - gameboard.get_ship_size(ship_number)) return goodInput;
+			if (y<0 || y >= 10) return goodInput;
 		}
 
-		else if(d == 1)
+		else if (d == 1)
 		{
-			if(gameboard.get_ship(x,y+i)) return goodInput;
-			if (x<0 || x>=10) return goodInput;
-			if (y<0 || y>=10-gameboard.get_ship_size(ship_number)-i) return goodInput;
+			if (gameboard.get_ship(x, y + i)) return goodInput;
+			if (x<0 || x >= 10) return goodInput;
+			if (y<0 || y>10 - gameboard.get_ship_size(ship_number)) return goodInput;
 		}
 
 		else
 			return goodInput;
 	}
-    goodInput = true;
-    return goodInput;
+	goodInput = true;
+	return goodInput;
 }
 
 void auto_set(Board& gameboard)
