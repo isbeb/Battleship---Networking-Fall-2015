@@ -62,6 +62,7 @@ void ClientHandler::processClient()
 			playerState = CONFIRM;
 			break;
 
+			// Wait for all clients to confirm setup
 		case CONFIRM:
 			newMessage = receiveMessage();
 
@@ -78,6 +79,8 @@ void ClientHandler::processClient()
 			}
 
 			break;
+
+			// Clients will now get their respective turns 
 		case GETTURN:
 			if (id == state->getCurrentPlayer()) {
 				sendMessage("TURN");
@@ -96,6 +99,8 @@ void ClientHandler::processClient()
 			}
 
 			break;
+
+			// Client's turn, send out move and wait for result
 		case TURN:
 			state->setBuffer(receiveMessage());
 			state->setBufferSwitched(true);
@@ -114,6 +119,7 @@ void ClientHandler::processClient()
 			playerState = GETTURN;
 			break;
 
+			// Not client's turn, get move and send result
 		case NOTURN:
 			while (!state->hasBufferSwitched())
 			{
@@ -140,6 +146,7 @@ void ClientHandler::processClient()
 			break;
 		}
 
+		// If all parties confirm after a win, then we replay.
 		if (state->getBuffer() == "WIN")
 		{
 			newMessage = receiveMessage();

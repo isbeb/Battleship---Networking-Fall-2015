@@ -11,16 +11,6 @@
 
 using namespace std;
 
-#define QUIT -1
-#define SETUP 0
-#define START 1
-#define TURN 2
-#define MOVE 3
-#define LOST 4
-#define UPDATE 5
-#define CONFIMATION 6
-#define DENIED 7
-
 struct Move {
 	int x;
 	int y;

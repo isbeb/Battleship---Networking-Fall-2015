@@ -4,10 +4,10 @@ Intial
 	Date Created: 11/19/15
 	Purpose: console for game battleship
 
-Modifications
-	Author: 
-	Date:
-	Modifed: 
+Last Modified
+	Author: Dillon Broadus 
+	Date: 11/30/15
+	Purpose: added networking components
 */
 
 #include <iostream>
@@ -239,11 +239,11 @@ bool battle_phase(Board player, Client c)
 		int x,y;
         bool goodInput = false;
 
-		int turn = c.getTurn();
-		c.confirm();
-		if (turn == 1) 
+		int turn = c.getTurn(); // Get turn
+		c.confirm(); // Tell the server it's acknowledged
+		if (turn == 1) // This client's turn
 		{ 
-
+			// Get player input
 			while (goodInput == false)
 			{
 				goodInput = UserInputAttack(x, y, player);
@@ -253,6 +253,7 @@ bool battle_phase(Board player, Client c)
 			//uncomment for autofiring 
 			//auto_shoot(x, y, player);
 
+			// Send move out
 			c.sendMove(x, y);
 
 			int shot = c.getUpdate(); // Info sent from server saying whether the players shot was a hit(true) or miss(false)
@@ -274,15 +275,12 @@ bool battle_phase(Board player, Client c)
 			}
 			else if (shot == -2) // Quit
 			{
-				cout << "Happened in the getUpdate branch" << endl;
 				c.exitGracefully();
 			}	 
 		}
-		else if (turn == 0)
+		else if (turn == 0) // Not this player's turn
 		{
 			Move o = c.getMove();
-			
-			cout << "I got a move!" << endl;
 
 			bool oShot = player.received_shot(o.x, o.y); // where player would check if the shot was a hit or miss
 
@@ -293,7 +291,7 @@ bool battle_phase(Board player, Client c)
 			if (aWin == 1)
 			{
 				cout << "\nDefeat!\n";
-				c.sendUpdate("WIN");
+				c.sendUpdate("WIN"); // Let the other player know they've won
 				
 				gameRunning = false;
 			}
@@ -301,16 +299,16 @@ bool battle_phase(Board player, Client c)
 			{
 				if (oShot == true)
 				{
-					c.sendUpdate("HIT");
+					c.sendUpdate("HIT"); // Let the other player know of a hit
 				}
 				else
 				{
-					c.sendUpdate("MISS");
+					c.sendUpdate("MISS"); // Let the other player know of a miss
 				}
 			}
 
 		}
-		else
+		else // Something not good happened
 		{
 			cout << "Happened in the getTurn branch" << endl;
 			c.exitGracefully();
@@ -323,11 +321,11 @@ bool battle_phase(Board player, Client c)
     cin >> choice;
 	if (choice == 1)
 	{
-		c.confirm();
+		c.confirm(); // yes
 		return true;
 	}
 	else {
-		c.deny();
+		c.deny(); // no
 		return false;
 	}
 };
