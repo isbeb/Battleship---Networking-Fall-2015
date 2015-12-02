@@ -15,45 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Client.h">
+    <ClInclude Include="..\Battleship.Client\board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="board.h">
+    <ClInclude Include="..\Battleship.Client\Client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ship.h">
+    <ClInclude Include="..\Battleship.Client\ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tile.h">
+    <ClInclude Include="..\Battleship.Client\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="..\Battleship.Client\targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="..\Battleship.Client\tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="..\Battleship.Client\Battleship.Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
+    <ClCompile Include="..\Battleship.Client\board.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ship.cpp">
+    <ClCompile Include="..\Battleship.Client\Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tile.cpp">
+    <ClCompile Include="..\Battleship.Client\ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="board.cpp">
+    <ClCompile Include="..\Battleship.Client\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Battleship.Client.cpp">
+    <ClCompile Include="..\Battleship.Client\tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
