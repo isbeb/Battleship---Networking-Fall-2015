@@ -1,5 +1,11 @@
 #include "ClientHandler.h"
 
+#define SETUP 0
+#define CONFIRM 1
+#define GETTURN 2
+#define TURN 3
+#define NOTURN 4
+
 ClientHandler::ClientHandler(GameState * gs)
 {
 	state = gs;
@@ -35,7 +41,7 @@ string ClientHandler::receiveMessage()
 	{
 		cout << "There was a problem receiving the information: " << WSAGetLastError() << endl;
 	}
-
+	
 	return string(recvbuf);
 }
 
@@ -43,19 +49,20 @@ void ClientHandler::processClient()
 {
 	int times = 0;
 
+	string newMessage = "";
+
 	while (state->isGameRunning())
 	{
-		string newMessage = "";
 		switch (playerState) {
 			// Now we wait for all clients and then let them know they can
 			// can set up.
-		case 0:
+		case SETUP:
 			sendMessage("SETUP");
 
-			playerState = 1;
+			playerState = CONFIRM;
 			break;
 
-		case 1:
+		case CONFIRM:
 			newMessage = receiveMessage();
 
 			if (newMessage == "CONFIRM") {
@@ -67,21 +74,29 @@ void ClientHandler::processClient()
 					;
 				}
 
-				playerState = 2;
+				playerState = GETTURN;
 			}
 
 			break;
-		case 2:
+		case GETTURN:
 			if (id == state->getCurrentPlayer()) {
 				sendMessage("TURN");
-				playerState = 3;
+				playerState = TURN;
 			}
 			else {
 				sendMessage("NOTURN");
-				playerState = 4;
+				playerState = NOTURN;
 			}
+
+			newMessage = receiveMessage();
+
+			while (newMessage != "CONFIRM")
+			{
+				newMessage = receiveMessage();
+			}
+
 			break;
-		case 3:
+		case TURN:
 			state->setBuffer(receiveMessage());
 			state->setBufferSwitched(true);
 			cout << "Got move" << endl;
@@ -96,10 +111,10 @@ void ClientHandler::processClient()
 
 			state->switchPlayer();
 			state->setPlayerSwitched(true);
-			playerState = 2;
+			playerState = GETTURN;
 			break;
 
-		case 4:
+		case NOTURN:
 			while (!state->hasBufferSwitched())
 			{
 				;
@@ -121,8 +136,22 @@ void ClientHandler::processClient()
 
 			state->setPlayerSwitched(false);
 
-			playerState = 2;
+			playerState = GETTURN;
 			break;
+		}
+
+		if (state->getBuffer() == "WIN")
+		{
+			newMessage = receiveMessage();
+
+			if (newMessage == "CONFIRM")
+			{
+				playerState = 1;
+			}
+			else
+			{
+				state->setGameRunning(false);
+			}
 		}
 	}
 }

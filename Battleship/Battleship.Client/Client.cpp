@@ -57,7 +57,7 @@ Client::Client(string ip, string port) {
 }
 
 void Client::sendMessage(string message)
-{
+{	
 	int result = send(connectSocket, message.c_str(), (int)strlen(message.c_str()), 0);
 	if (result == SOCKET_ERROR)
 	{
@@ -75,7 +75,6 @@ string Client::receiveMessage()
 	if (result == SOCKET_ERROR)
 	{
 		cout << "There was a problem receiving the information: " << WSAGetLastError() << endl;
-		return "";
 	}
 
 	return string(recvbuf);
@@ -95,9 +94,14 @@ bool Client::getSetupSignal()
 	}
 }
 
-void Client::confirmSetup()
+void Client::confirm()
 {
 	sendMessage("CONFIRM");
+}
+
+void Client::deny()
+{
+	sendMessage("DENY");
 }
 
 void Client::sendMove(int x, int y)
@@ -112,7 +116,6 @@ void Client::sendMove(int x, int y)
 void Client::exitGracefully()
 {
 	cout << "Opponent quit unexpectedly" << endl;
-	cin.get();
 	cleanup();
 	system("exit");
 }
@@ -142,7 +145,7 @@ int Client::getUpdate()
 Move Client::getMove()
 {
 	string newMessage = receiveMessage();
-	
+
 	string x = newMessage.substr(0, newMessage.find(','));
 	string y = newMessage.substr(newMessage.find(',') + 1, newMessage.length());
 
@@ -167,7 +170,7 @@ int Client::getTurn()
 	{
 		return 1;
 	}
-	else if (newMessage == "NOTURN")
+	else if (newMessage == "NOTURN") // This gets attached to the message...?
 	{
 		return 0;
 	}

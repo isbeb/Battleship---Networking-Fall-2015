@@ -50,13 +50,14 @@ public:
 	// For now, we're going to connect to 127.0.0.1 (localhost)
 	// For now, our server will open at port 8000.
 	bool getSetupSignal();
-	void confirmSetup();
+	void confirm();
 	void sendMove(int x, int y);
 	void exitGracefully();
 	int getUpdate();
 	Move getMove();
 	void sendUpdate(string result);
 	int getTurn();
+	void deny();
 };
 
 #endif

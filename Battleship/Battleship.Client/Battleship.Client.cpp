@@ -240,17 +240,18 @@ bool battle_phase(Board player, Client c)
         bool goodInput = false;
 
 		int turn = c.getTurn();
+		c.confirm();
 		if (turn == 1) 
 		{ 
-			// If it's the player's turn, come here
-			/*while (goodInput == false)
+
+			while (goodInput == false)
 			{
 				goodInput = UserInputAttack(x, y, player);
-			}*/
+			}
 
-			//...or here. Good for testing
+			//Good for testing
 			//uncomment for autofiring 
-			auto_shoot(x, y, player);
+			//auto_shoot(x, y, player);
 
 			c.sendMove(x, y);
 
@@ -273,6 +274,7 @@ bool battle_phase(Board player, Client c)
 			}
 			else if (shot == -2) // Quit
 			{
+				cout << "Happened in the getUpdate branch" << endl;
 				c.exitGracefully();
 			}	 
 		}
@@ -310,18 +312,24 @@ bool battle_phase(Board player, Client c)
 		}
 		else
 		{
+			cout << "Happened in the getTurn branch" << endl;
 			c.exitGracefully();
 		}
     }
     while (gameRunning);
 
 	cout << "Play again?(0 for no and 1 for yes)\n";
-	 int choice;
-     cin >> choice;
-	 if( choice == 1)
-		 return false; // add in a play again message to server
-	 else
-		 return true;
+	int choice;
+    cin >> choice;
+	if (choice == 1)
+	{
+		c.confirm();
+		return true;
+	}
+	else {
+		c.deny();
+		return false;
+	}
 };
 
 //################################## Main method #######################################
@@ -334,7 +342,7 @@ int main(){
 
 	if (c.getSetupSignal())
 	{
-		bool play_again = false;
+		bool play_again = true;
 		do
 		{
 			Board playerboard;
@@ -344,11 +352,11 @@ int main(){
 
 			set_phase(playerboard);
 
-			c.confirmSetup();
+			c.confirm();
 
 			play_again = battle_phase(playerboard, c);
 
-		} while (play_again == false);
+		} while (play_again == true);
 
 		c.~Client();
     }
